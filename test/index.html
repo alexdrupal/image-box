@@ -1,0 +1,83 @@
+<!doctype html>
+<html>
+<head>
+	<meta charset="utf-8" />
+	<title>jQuery imagebox</title>
+
+	<script type="text/javascript" src="../lib/jquery.js"></script>
+	<script type="text/javascript" src="../image-box.js"></script>
+
+	<style type="text/css">
+		.iboxOverlay {
+			background-color: rgba(255, 255, 255, 0.6);
+			text-align: center;
+			display: none;
+			position: fixed;
+			top: 0;
+			left: 0;
+			width: 100%;
+			height: 100%;
+		}
+		.iboxWrapper {
+			transform: translate(-50%, -50%);
+			position: absolute;
+			top: 50%;
+			left: 50%;
+		}
+		.iboxOverlay img { max-width: 600px; }
+		.iboxButtons {
+			color: gray;
+			position: absolute;
+			font-size: 5em;
+			font-weight: bold;
+			vertical-align: middle;
+			text-decoration: none;
+			opacity: 0.3;
+		}
+		.iboxButtons:hover { opacity: 0.9; }
+		a#prev { top: 0; left: 0; width: 50px; }
+		a#next { top: 0; right: 0; width: 50px; }
+		a#close { top: -1em; right: 0; font-size: 3em; line-height: normal; }
+		.iboxBullet { margin: 2px; font-size: 3em; text-decoration: none; color: gray; }
+		.iboxBullet:hover, .iboxActive { color: red; }
+	</style>
+</head>
+<body>
+
+<a href="../files/check.png" rel="ibox" title="check png image">load check</a>
+<a href="../files/escudo.jpg" rel="ibox" title="escudo de la upct">load escudo</a>
+<a href="../files/evol2.bmp" rel="ibox" title="web 2.0">load evol2</a>
+<br>
+<a href="../files/escudo.jpg" rel="upct" title="escudo y nombre de la upct">load escudo</a>
+<a href="../files/escudo2.jpg" rel="upct" title="escudo de la upct">load escudo mini</a>
+
+
+<script type="text/javascript">
+	var ib = $("a[rel=ibox]").imagebox({
+		onLoad: function() { alert("onLoad1"); },
+		beforeChange: function() { alert("Before Change..."); },
+		afterChange: function() { alert("After Change..."); },
+		onClose: function() { alert("Closing..."); }
+	});
+
+	$("a[rel=upct]").imagebox({
+		onLoad: null,
+		beforeChange: function() { alert("UPCT Before Change..."); },
+		afterChange: function() { alert("UPCT After Change..."); },
+		onClose: function() { alert("Closing..."); }
+	});
+
+	setTimeout(function() {
+		ib.unbind("click").imagebox({
+			onLoad: function() { alert("onLoad2"); },
+			beforeChange: null,
+			afterChange: null,
+			onClose: function() { alert("Only Closing event..."); }
+		});
+	}, 3000);
+	setTimeout(function() { $.imageBoxOpen("../files/escudo2.jpg"); }, 5000);
+	setTimeout(function() { $.imageBoxClose(); }, 7000);
+</script>
+
+</body>
+</html>
