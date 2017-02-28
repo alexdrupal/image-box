@@ -17,9 +17,9 @@
 		classTitle: "iboxTitle"
 	};
 
-	function close(fn) {
+	function close() {
 		settings.onClose && settings.onClose(); //call onclose event
-		return !$(iboxOverlay).fadeOut(settings.duration, fn);
+		return !$(iboxOverlay).fadeOut(settings.duration);
 	};
 
 	//create once all DOM elements to overlay image-box
@@ -55,10 +55,11 @@
 	};
 
 	$.imageBoxClose = function() {
-		close(function() {
-			$(iboxOverlay).unbind("click").click(close);
+		settings.onClose && settings.onClose(); //call onclose event
+		$(iboxOverlay).fadeOut(settings.duration, function() {
 			$(btnClose).show(); $(btnPrev).show(); $(btnNext).show();
 			$(iboxBullets).show(); $(iboxTitle).show();
+			$(this).unbind("click").click(close);
 		});
 	};
 
@@ -117,5 +118,4 @@
 		settings.onLoad && settings.onLoad();
 		return this;
 	};
-
 }(jQuery));
