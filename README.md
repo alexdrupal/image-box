@@ -1,2 +1,2 @@
 # image-box
-Light slider images and modal open and close functions to popup image
+Light slider images and modal open/close functions to popup image
