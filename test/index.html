@@ -50,6 +50,8 @@
 <br>
 <a href="../files/escudo.jpg" rel="upct" title="escudo y nombre de la upct">load escudo</a>
 <a href="../files/escudo2.jpg" rel="upct" title="escudo de la upct">load escudo mini</a>
+<br>
+<a href="#" id="loading" title="open modal image">loading...</a>
 
 
 <script type="text/javascript">
@@ -75,8 +77,11 @@
 			onClose: function() { alert("Only Closing event..."); }
 		});
 	}, 3000);
-	setTimeout(function() { $.imageBoxOpen("../files/escudo2.jpg"); }, 5000);
-	setTimeout(function() { $.imageBoxClose(); }, 7000);
+
+	$("a#loading").click(function() {
+		$.imageBoxOpen();
+		setTimeout(function() { $.imageBoxClose(); }, 3000);
+	});
 </script>
 
 </body>
