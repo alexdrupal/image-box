@@ -18,11 +18,9 @@
 		classTitle: "iboxTitle"
 	};
 
-	function close(fn) {
-		index = -1; //desactive keyup events
-		settings.onClose && settings.onClose(); //call onclose event
-		return !$(iboxOverlay).fadeOut(settings.duration, fn);
-	};
+	//desactive keyup events and call onClose event
+	function onClose() { index = -1; settings.onClose && settings.onClose(); };
+	function close() { $(iboxOverlay).fadeOut(settings.duration, onClose); return false; };
 
 	//create once all DOM elements to overlay image-box
 	var iboxOverlay = document.createElement("div");
@@ -56,10 +54,11 @@
 	};
 
 	$.imageBoxClose = function() {
-		close(function() {
+		$(iboxOverlay).fadeOut(settings.duration, function() {
 			$(btnClose).show(); $(btnPrev).show(); $(btnNext).show();
 			$(iboxBullets).show(); $(iboxTitle).show();
 			$(this).unbind("click").click(close);
+			onClose();
 		});
 	};
 
