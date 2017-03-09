@@ -1,5 +1,5 @@
-# Ignore all of tests files
-static/* linguist-vendored
+# Ignore all tests files
+test/* linguist-vendored
 
 # Auto detect text files and perform LF normalization
 * text=auto
