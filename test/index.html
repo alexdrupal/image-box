@@ -35,9 +35,9 @@
 			opacity: 0.3;
 		}
 		.iboxButtons:hover { opacity: 0.9; }
-		a#prev { top: 0; left: 0; width: 50px; }
-		a#next { top: 0; right: 0; width: 50px; }
-		a#close { top: -1em; right: 0; font-size: 3em; line-height: normal; }
+		a.iboxClose { top: -1em; right: 0; font-size: 3em; line-height: normal; }
+		a.iboxPrev { top: 0; left: 0; width: 50px; }
+		a.iboxNext { top: 0; right: 0; width: 50px; }
 		.iboxBullet { margin: 2px; font-size: 3em; text-decoration: none; color: gray; }
 		.iboxBullet:hover, .iboxActive { color: red; }
 	</style>
@@ -55,28 +55,19 @@
 
 
 <script type="text/javascript">
-	var ib = $("a[rel=ibox]").imagebox({
+	$("a[rel=ibox]").imageBox({
 		onLoad: function() { alert("onLoad1"); },
 		beforeChange: function() { alert("Before Change..."); },
 		afterChange: function() { alert("After Change..."); },
 		onClose: function() { alert("Closing..."); }
 	});
 
-	$("a[rel=upct]").imagebox({
+	$("a[rel=upct]").imageBox({
 		onLoad: null,
 		beforeChange: function() { alert("UPCT Before Change..."); },
 		afterChange: function() { alert("UPCT After Change..."); },
 		onClose: function() { alert("Closing..."); }
 	});
-
-	setTimeout(function() {
-		ib.unbind("click").imagebox({
-			onLoad: function() { alert("onLoad2"); },
-			beforeChange: null,
-			afterChange: null,
-			onClose: function() { alert("Only Closing event..."); }
-		});
-	}, 3000);
 
 	$("a#loading").click(function() {
 		$.imageBoxOpen();

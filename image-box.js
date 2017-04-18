@@ -1,26 +1,32 @@
 
 (function($) {
-	var index = -1; //position indicator
 	var settings = { //global config
-		duration: 300,
+		duration: 400,
 		preserveHeight: true,
 		prevText: "&lang;",
 		nextText: "&rang;",
 		closeText: "&times;",
 		bulletText: "&bullet;",
-		imageLoading: "data:image/svg+xml;base64," + btoa('<svg version="1.1" id="Layer_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="60px" height="68px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve"><rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2"><animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite" /><animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite" /><animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite" /></rect><rect x="8" y="10" width="4" height="10" fill="#333"  opacity="0.2"><animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite" /><animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite" /><animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite" /></rect><rect x="16" y="10" width="4" height="10" fill="#333"  opacity="0.2"><animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite" /><animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite" /><animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite" /></rect></svg>'),
+		imageLoading: "data:image/svg+xml;base64," + btoa('<svg version="1.1" id="L1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="70px" height="80px" viewBox="0 0 24 30" style="enable-background:new 0 0 50 50;" xml:space="preserve"><rect x="0" y="10" width="4" height="10" fill="#333" opacity="0.2"><animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0s" dur="0.6s" repeatCount="indefinite" /><animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0s" dur="0.6s" repeatCount="indefinite" /><animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0s" dur="0.6s" repeatCount="indefinite" /></rect><rect x="8" y="10" width="4" height="10" fill="#333" opacity="0.2"><animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.15s" dur="0.6s" repeatCount="indefinite" /><animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite" /><animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.15s" dur="0.6s" repeatCount="indefinite" /></rect><rect x="16" y="10" width="4" height="10" fill="#333" opacity="0.2"><animate attributeName="opacity" attributeType="XML" values="0.2; 1; .2" begin="0.3s" dur="0.6s" repeatCount="indefinite" /><animate attributeName="height" attributeType="XML" values="10; 20; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite" /><animate attributeName="y" attributeType="XML" values="10; 5; 10" begin="0.3s" dur="0.6s" repeatCount="indefinite" /></rect></svg>'),
 		classOverlay: "iboxOverlay",
 		classWrapper: "iboxWrapper",
 		classButtons: "iboxButtons",
+		classButtonClose: "iboxClose",
+		classButtonPrev: "iboxPrev",
+		classButtonNext: "iboxNext",
 		classBullets: "iboxBullets",
 		classBullet: "iboxBullet",
 		classActiveBullet: "iboxActive",
-		classTitle: "iboxTitle"
-	};
+		classTitle: "iboxTitle",
 
-	//desactive keyup events and call onClose event
-	function onClose() { index = -1; settings.onClose && settings.onClose(); };
-	function close() { $(iboxOverlay).fadeOut(settings.duration, onClose); return false; };
+		msgFadeDuration: 1000,
+		msgCloseButton: "&times;",
+		classMessageButton: "msgButton",
+		classMessageOk: "msgOk",
+		classMessageInfo: "msgInfo",
+		classMessageWarn: "msgWarn",
+		classMessageError: "msgError"
+	};
 
 	//create once all DOM elements to overlay image-box
 	var iboxOverlay = document.createElement("div");
@@ -32,21 +38,25 @@
 	var btnPrev = iboxWrapper.appendChild(document.createElement("a"));
 	var btnNext = iboxWrapper.appendChild(document.createElement("a"));
 
-	$(iboxOverlay).click(close); //add close event
-	$(btnClose).attr("id", "close").attr("href", "#").click(close);
-	$(btnPrev).attr("id", "prev").attr("href", "#");
-	$(btnNext).attr("id", "next").attr("href", "#");
+	//keyup events and
+	function fnKeyUp(ev) {
+		(ev.keyCode == 27) && close(); //escape keycode = 27
+		(ev.keyCode == 37) && $(btnPrev).click(); //left keycode = 37
+		(ev.keyCode == 39) && $(btnNext).click(); //right keycode = 39
+	};
 
+	function onClose() { $(document).unbind("keyup", fnKeyUp); $(iboxImage).attr("src", settings.imageLoading); settings.onClose && settings.onClose(); };
+	function close() { $(iboxOverlay).fadeOut(settings.duration, onClose); return false; }; //close overlay
+	function range(val, min, max) { return Math.min(Math.max(val, min), max); };
+
+	//add overlay layer when DOM is fully loaded
 	$(function() { document.body.appendChild(iboxOverlay); });
-	$(document).keyup(function(e) {
-		if (index < 0) return null; //inactive box
-		(e.keyCode == 27) && close(); //escape keycode = 27
-		(e.keyCode == 37) && $(btnPrev).click(); //left keycode = 37
-		(e.keyCode == 39) && $(btnNext).click(); //right keycode = 39
-	});
+	//set default class and close event to overlay and wrapper
+	$(iboxOverlay).addClass(settings.classOverlay).click(close);
+	$(iboxWrapper).addClass(settings.classWrapper);
+	$(btnClose).attr("href", "#").click(close);
 
 	$.imageBoxOpen = function(img) {
-		settings.onLoad && settings.onLoad();
 		$(iboxImage).attr("src", img || settings.imageLoading);
 		$(btnClose).hide(); $(btnPrev).hide(); $(btnNext).hide();
 		$(iboxBullets).hide().empty(); $(iboxTitle).hide().text("");
@@ -58,64 +68,82 @@
 			$(btnClose).show(); $(btnPrev).show(); $(btnNext).show();
 			$(iboxBullets).show(); $(iboxTitle).show();
 			$(this).unbind("click").click(close);
-			onClose();
 		});
 	};
 
-	$.fn.imagebox = function(opts) {
+	//create once all DOM elements to messages list-box
+	function fnRemove() { $(this).remove(); };
+	function fnHide() { $(this).fadeOut(settings.msgFadeDuration, fnRemove); };
+	function msgBox(box, msg, cls) {
+		var msgBox = document.createElement("div");
+		var fnHideBox = function() { $(msgBox).next().each(fnHide); };
+		var fnTimeout = function() { setTimeout(fnHideBox, settings.msgFadeDuration); };
+		var button = msgBox.appendChild(document.createElement("span"));
+		$(button).addClass(settings.classMessageButton)
+				.click(function() { $(msgBox).each(fnHide) })
+				.html(settings.msgCloseButton);
+		box.prepend($(msgBox).append("<span>" + msg + "</span>"));
+		$(msgBox).addClass(cls).fadeIn(settings.msgFadeDuration, fnTimeout);
+	};
+
+	$.fn.messageBox = function(opts) { $.extend(settings, opts); return this; };
+	$.fn.showBoxOk = function(msg) { msgBox(this, msg, settings.classMessageOk); return this; };
+	$.fn.showBoxInfo = function(msg) { msgBox(this, msg, settings.classMessageInfo); return this; };
+	$.fn.showBoxWarn = function(msg) { msgBox(this, msg, settings.classMessageWarn); return this; };
+	$.fn.showBoxError = function(msg) { msgBox(this, msg, settings.classMessageError); return this; };
+	$.fn.hideBoxMsgs = function() { return $(this).children().each(fnHide); };
+
+	$.fn.imageBox = function(opts) {
+		opts = $.extend({}, settings, opts); //config
 		var self = this; //reference to jQuery list
-		opts && $.extend(settings, opts); //inicialize settings
-		function range(val, min, max) { return Math.min(Math.max(val, min), max); };
-		function rangeList(val) { return range(val, 0, self.length - 1); };
+		var index = 0; //position indicator
+
 		function onChange() {
-			if (settings.preserveHeight) {
+			if (opts.preserveHeight) {
 				var height = $(iboxImage).height() + "px";
 				$(btnPrev).css({"line-height": height, "height": height});
 				$(btnNext).css({"line-height": height, "height": height});
 			}
 			$(btnPrev).show(); $(btnNext).show();
-			settings.afterChange && settings.afterChange(); //call event
+			opts.afterChange && opts.afterChange(); //call event
 		};
 
-		function getImage(i) {
-			index = rangeList(i);
-			return $(self[i]).attr("href");
-		};
 		function setImage(i) {
+			index = range(i, 0, self.length - 1);
 			$(btnPrev).hide(); $(btnNext).hide();
-			settings.beforeChange && settings.beforeChange(); //call event
+			opts.beforeChange && opts.beforeChange(); //call event
 			$(iboxTitle).html($(self[i]).attr("title")); //set title image
-			$(iboxImage).fadeOut(settings.duration, function() { //fade old image
-				$(this).attr("src", getImage(i)).fadeIn(settings.duration, onChange);
-				var bullets = $("a", iboxBullets).removeClass(settings.classActiveBullet);
-				$(bullets[index]).addClass(settings.classActiveBullet);
+			$(iboxImage).fadeOut(opts.duration, function() { //fade old image
+				$(this).attr("src", $(self[i]).attr("href")).fadeIn(opts.duration, onChange);
+				var bullets = $("a", iboxBullets).removeClass(opts.classActiveBullet);
+				$(bullets[index]).addClass(opts.classActiveBullet);
 			});
 			return false; //prevent event default for links
 		};
 
-		$(btnClose).addClass(settings.classButtons).html(settings.closeText);
-		$(btnPrev).addClass(settings.classButtons).html(settings.prevText);
-		$(btnNext).addClass(settings.classButtons).html(settings.nextText);
-
+		$(btnClose).addClass(opts.classButtons + " " + opts.classButtonClose).html(opts.closeText);
+		$(btnPrev).attr("href", "#").addClass(opts.classButtons + " " + opts.classButtonPrev).html(opts.prevText);
+		$(btnNext).attr("href", "#").addClass(opts.classButtons + " " + opts.classButtonNext).html(opts.nextText);
 		this.click(function() {
 			$(iboxBullets).empty();
-			$(iboxOverlay).fadeIn(settings.duration);
+			$(document).keyup(fnKeyUp); //load key event
 			$(btnPrev).unbind("click").click(function() { return setImage(index - 1); });
 			$(btnNext).unbind("click").click(function() { return setImage(index + 1); });
 			self.each(function(i) {
 				var bullet = iboxBullets.appendChild(document.createElement("a"));
-				$(bullet).attr("id", "bullet" + i).attr("href", "#").addClass(settings.classBullet)
+				$(bullet).attr("href", "#").addClass(opts.classBullet)
 						.click(function() { return setImage(i); })
-						.html(settings.bulletText);
+						.html(opts.bulletText);
 			});
-			return setImage(self.index(this));
+			$(iboxOverlay).fadeIn(opts.duration);
+			return setImage(self.index(this)); //put image
 		});
 
-		$(iboxOverlay).attr("id", "iboxOverlay").addClass(settings.classOverlay);
-		$(iboxWrapper).attr("id", "iboxWrapper").addClass(settings.classWrapper);
-		$(iboxBullets).attr("id", "iboxBullets").addClass(settings.classBullets);
-		$(iboxTitle).attr("id", "iboxTitle").addClass(settings.classTitle);
-		settings.onLoad && settings.onLoad();
+		$(iboxOverlay).addClass(opts.classOverlay);
+		$(iboxWrapper).addClass(opts.classWrapper);
+		$(iboxBullets).addClass(opts.classBullets);
+		$(iboxTitle).addClass(opts.classTitle);
+		opts.onLoad && opts.onLoad();
 		return this;
 	};
 }(jQuery));
