@@ -48,7 +48,6 @@
 
 	function onClose() {
 		$(document).unbind("keyup", fnKeyUp);
-		$(iboxImage).attr("src", settings.imageLoading);
 		settings.onClose && settings.onClose();
 	};
 
@@ -59,14 +58,15 @@
 	$(function() { document.body.appendChild(iboxOverlay); });
 	//set default class and close event to overlay and wrapper
 	$(iboxOverlay).addClass(settings.classOverlay).click(close);
-	$(iboxWrapper).addClass(settings.classWrapper);
+	$(iboxWrapper).addClass(settings.classWrapper); //preload default class
+	$(iboxImage).attr("src", settings.imageLoading); //preload default image
 	$(btnClose).attr("href", "#").click(close);
 
 	$.imageBoxOpen = function(img) {
-		$(iboxImage).attr("src", img || settings.imageLoading);
+		img && $(iboxImage).attr("src", img);
+		$(iboxOverlay).unbind("click").show();
 		$(btnClose).hide(); $(btnPrev).hide(); $(btnNext).hide();
 		$(iboxBullets).hide().empty(); $(iboxTitle).hide().text("");
-		$(iboxOverlay).unbind("click").fadeIn(settings.duration);
 	};
 
 	$.imageBoxClose = function() {
@@ -113,7 +113,7 @@
 				$(btnPrev).css({"line-height": height, "height": height});
 				$(btnNext).css({"line-height": height, "height": height});
 			}
-			$(btnPrev).show(); $(btnNext).show();
+			$(btnPrev).show(); $(btnNext).show(); //show buttons
 			opts.afterChange && opts.afterChange(); //call event
 		};
 
