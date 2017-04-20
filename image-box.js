@@ -48,6 +48,10 @@
 
 	function onClose() {
 		$(document).unbind("keyup", fnKeyUp);
+<<<<<<< HEAD
+=======
+		$(iboxImage).attr("src", settings.imageLoading);
+>>>>>>> e54e910b3586eec0edbb8740e1e96842dab94783
 		settings.onClose && settings.onClose();
 	};
 
