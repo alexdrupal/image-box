@@ -20,6 +20,7 @@
 		classTitle: "iboxTitle",
 
 		msgFadeDuration: 1000,
+		msgNextDuration: 8000,
 		msgCloseButton: "&times;",
 		classMessageButton: "msgButton",
 		classMessageOk: "msgOk",
@@ -45,9 +46,14 @@
 		(ev.keyCode == 39) && $(btnNext).click(); //right keycode = 39
 	};
 
-	function onClose() { $(document).unbind("keyup", fnKeyUp); $(iboxImage).attr("src", settings.imageLoading); settings.onClose && settings.onClose(); };
+	function onClose() {
+		$(document).unbind("keyup", fnKeyUp);
+		$(iboxImage).attr("src", settings.imageLoading);
+		settings.onClose && settings.onClose();
+	};
+
 	function close() { $(iboxOverlay).fadeOut(settings.duration, onClose); return false; }; //close overlay
-	function range(val, min, max) { return Math.min(Math.max(val, min), max); };
+	function range(val, min, max) { return Math.min(Math.max(val, min), max); }; //range value
 
 	//add overlay layer when DOM is fully loaded
 	$(function() { document.body.appendChild(iboxOverlay); });
@@ -72,25 +78,28 @@
 	};
 
 	//create once all DOM elements to messages list-box
-	function fnRemove() { $(this).remove(); };
+	function fnVoid() {}; //void function => none action
+	function fnRemove() { $(this).remove(); }; //remove this DOM
 	function fnHide() { $(this).fadeOut(settings.msgFadeDuration, fnRemove); };
 	function msgBox(box, msg, cls) {
 		var msgBox = document.createElement("div");
 		var fnHideBox = function() { $(msgBox).next().each(fnHide); };
-		var fnTimeout = function() { setTimeout(fnHideBox, settings.msgFadeDuration); };
+		var fnTimeout = function() { setTimeout(fnHideBox, settings.msgNextDuration); };
 		var button = msgBox.appendChild(document.createElement("span"));
 		$(button).addClass(settings.classMessageButton)
 				.click(function() { $(msgBox).each(fnHide) })
 				.html(settings.msgCloseButton);
 		box.prepend($(msgBox).append("<span>" + msg + "</span>"));
-		$(msgBox).addClass(cls).fadeIn(settings.msgFadeDuration, fnTimeout);
+		var fn = (settings.msgNextDuration < 0) ? fnVoid : fnTimeout;
+		$(msgBox).addClass(cls).fadeIn(settings.msgFadeDuration, fn);
+		return box;
 	};
 
 	$.fn.messageBox = function(opts) { $.extend(settings, opts); return this; };
-	$.fn.showBoxOk = function(msg) { msgBox(this, msg, settings.classMessageOk); return this; };
-	$.fn.showBoxInfo = function(msg) { msgBox(this, msg, settings.classMessageInfo); return this; };
-	$.fn.showBoxWarn = function(msg) { msgBox(this, msg, settings.classMessageWarn); return this; };
-	$.fn.showBoxError = function(msg) { msgBox(this, msg, settings.classMessageError); return this; };
+	$.fn.showBoxOk = function(msg) { return msgBox(this, msg, settings.classMessageOk); };
+	$.fn.showBoxInfo = function(msg) { return msgBox(this, msg, settings.classMessageInfo); };
+	$.fn.showBoxWarn = function(msg) { return msgBox(this, msg, settings.classMessageWarn); };
+	$.fn.showBoxError = function(msg) { return msgBox(this, msg, settings.classMessageError); };
 	$.fn.hideBoxMsgs = function() { return $(this).children().each(fnHide); };
 
 	$.fn.imageBox = function(opts) {
